@@ -1,26 +1,21 @@
 <template>
-  <p>Hello</p>
   <p>{{ jsData }}</p>
-  <!--<img src="../assets/logo.png">-->
-  <!--<div class="inputContainer">
-    <img src="../assets/logo.png">
-    <hello></hello>
-  </div>-->
 </template>
 
 <script>
   import wx from 'weixin-js-sdk';
+
   export default {
     name: 'index',
     data() {
       return {
-        jsData: '123',
+        jsData: 'Hello',
       };
     },
     created() {
-      this.$http.get('./api/jsconfig').then(resp => {
+      this.$http.get('./api/jsconfig').then((resp) => {
         const jsconfig = resp.json();
-        console.log(jsconfig, window.location.href);
+        console.log(jsconfig);
         wx.config(jsconfig);
         this.jsData = jsconfig;
         const shareConfig = {
