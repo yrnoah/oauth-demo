@@ -13,7 +13,8 @@
       };
     },
     created() {
-      this.$http.get('./api/jsconfig').then((resp) => {
+      console.log(this.$http);
+      this.$http.get('/api/jsconfig').then((resp) => {
         const jsconfig = resp.json();
         console.log(jsconfig);
         wx.config(jsconfig);
