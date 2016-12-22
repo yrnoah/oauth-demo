@@ -63,7 +63,7 @@ app.use('/wechat', wechat({
   next();
 }))
 // http://srkfytl.gofriend.me/internal
-url = client.getAuthorizeURL('http://srkfytl.gofriend.me/nroauth', 'momo233', 'snsapi_userinfo');
+url = client.getAuthorizeURL('http://srkfytl.gofriend.me:5013/nroauth', 'momo233', 'snsapi_userinfo');
 app.get('/oauth', (req, res, next) => {
   res.redirect(url);
 });
@@ -71,11 +71,11 @@ app.get('/oauth', (req, res, next) => {
 
 let jsconfig, userInfo;
 app.get('/nroauth', (req, res, next) => {
-	console.log(req);
+	console.log(req, '=========================', req.path);
   let param = {
     debug: true,
     jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
-    url: 'http://srkfytl.gofriend.me/nroauth'
+    url: 'http://srkfytl.gofriend.me:5013/nroauth'
   };
   api.getJsConfig(param, (err, resault)=> {
     if(err) {
@@ -100,10 +100,10 @@ app.get('/api/jsconfig', (req, res, next) => {
 //   })
 // })
 
-app.get('/', (req, res, next) => {
-  console.log(req);
-  res.render('index');
-});
+// app.get('/', (req, res, next) => {
+//   console.log(req);
+//   res.render('index');
+// });
 
 const port = 5013;
 app.listen(port, (err) => { console.log("http oppened on " + port) });
