@@ -78,7 +78,7 @@ app.get('/nroauth', (req, res, next) => {
     url: 'http://srkfytl.gofriend.me:5013/nroauth'
   };
   api.getJsConfig(param, (err, resault)=> {
-    console.log('======================', param, err, resault);
+    // console.log('======================', param, err, resault);
     if(err) {
       console.log(err);
       next();
