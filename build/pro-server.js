@@ -85,9 +85,9 @@ app.get('/nroauth', (req, res, next) => {
     }
     jsconfig = resault;
   });
-  console.log('==========================', jsconfig)
+  console.log('==========================', jsconfig);
   // res.render('index');
-  // res.redirect('http://srkfytl.gofriend.me/nroauth');
+  res.redirect('http://srkfytl.gofriend.me/nroauth');
 });
 
 app.get('/api/jsconfig', (req, res, next) => {
