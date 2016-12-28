@@ -13,15 +13,12 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const swig = require('swig');
 
-const [token, appid, EncodingAESKey, appsecret] =
-      ['nrdemotoken',
-       'wx1c890575b460163f',
-       '',
+const [appid, appsecret] =
+      ['wx1c890575b460163f',
        '9fcb55dc39a0615b05487b608fd126b4'];
 const api = new WechatApi(appid, appsecret);
 const client = new WechatOauth(appid, appsecret);
 
-let url;
 app.set('view engine', 'html');
 app.set('view cache', false);
 app.set('views', './dist')
@@ -32,11 +29,6 @@ app.use(cookieParser());
 app.engine('html', swig.renderFile);
 app.use(express.static('dist', {'extensions': ['html']}));
 app.use(express.query());
-const wechatConfig = {
-  token,
-  appid,
-  EncodingAESKey,
-}
 
 // Error Handlers
 if (app.get('env') === 'development') {
@@ -56,38 +48,38 @@ function renderError(sendErrorObj) {
   });
 }
 
-app.use('/wechat', wechat({
-  token: 'nrdemotoken',
-  appid: appid,
-}, (req, res, next)=> {
-  next();
-}))
-// http://srkfytl.gofriend.me/internal
-url = client.getAuthorizeURL('http://srkfytl.gofriend.me:5013/nroauth', 'momo233', 'snsapi_userinfo');
+let url;
+url = client.getAuthorizeURL('http://srkfytl.gofriend.me:5013/nroauth', 'noah', 'snsapi_userinfo');
 app.get('/oauth', (req, res, next) => {
   res.redirect(url);
 });
 
-
-let jsconfig, userInfo;
+let jsconfig, userInfo, openId, accessToken;
 app.get('/nroauth', (req, res, next) => {
-	console.log(req, '=========================', req.path);
+  if (req.query.code) {
+    client.getAccessToken(req.query.code, (err, result) => {
+      if (err) {
+        console.log(err);
+        next();
+      }
+      openId = result.data.openid;
+      accessToken = result.data.access_token;
+    });
+  }
   let param = {
     debug: true,
     jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
-    url: 'http://srkfytl.gofriend.me:5013/nroauth'
+    url: `http://srkfytl.gofriend.me:5013${req.url}`,
   };
-  api.getJsConfig(param, (err, resault)=> {
-    // console.log('======================', param, err, resault);
+  api.getJsConfig(param, (err, result)=> {
     if(err) {
       console.log(err);
       next();
     }
-    jsconfig = resault;
+    jsconfig = result;
   });
-  console.log('==========================', jsconfig);
-  // res.render('index');
-  res.redirect('http://srkfytl.gofriend.me/nroauth');
+	res.render('index');
+  // res.redirect('http://srkfytl.gofriend.me:5013/nroauth');
 });
 
 app.get('/api/jsconfig', (req, res, next) => {
@@ -95,17 +87,18 @@ app.get('/api/jsconfig', (req, res, next) => {
   next();
 })
 
-// app.get('/user_info', (req, res, next) => {
-//   const { openId } = req.body;
-//   client.getUser(openId, () => {
-
-//   })
-// })
-
-// app.get('/', (req, res, next) => {
-//   console.log(req);
-//   res.render('index');
-// });
+app.get('/api/getUser', (req, res, next) => {
+  if (openId) {
+    client.getUser(openId, (err, result) => {
+      if (err) {
+        console.log(err);
+        next();
+      }
+      userInfo = result;
+      res.send(userInfo);
+    });
+  }
+});
 
 const port = 5013;
 app.listen(port, (err) => { console.log("http oppened on " + port) });

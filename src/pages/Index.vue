@@ -1,5 +1,8 @@
 <template>
-  <p>{{ jsData }}</p>
+  <div>
+    <p>{{ jsData }}</p>
+    <p>{{ reqData }}</p>
+  </div>
 </template>
 
 <script>
@@ -10,13 +13,13 @@
     data() {
       return {
         jsData: 'Hello',
+        reqData: '123',
       };
     },
     created() {
-      console.log(this.$http);
       this.$http.get('/api/jsconfig').then((resp) => {
-        const jsconfig = resp.json();
-        console.log(jsconfig);
+        const jsconfig = resp.body;
+        console.log(jsconfig, 'jsconfig', resp);
         wx.config(jsconfig);
         this.jsData = jsconfig;
         const shareConfig = {
@@ -29,8 +32,10 @@
           wx.onMenuShareAppMessage(shareConfig);
         });
       });
+      this.$http.get('/api/getUser').then((resp) => {
+        console.log(resp);
+        this.reqData = resp.body;
+      });
     },
   };
 </script>
-
-<!--<style></style>-->
